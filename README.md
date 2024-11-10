@@ -5,6 +5,112 @@
 - **RippleAPI** (`xrpl.js` library)
 - **wasmcc** (WebAssembly compiler)
 
+## System Design Diagrams
+
+1. **High-Level System Design Diagram**
+
+   ```mermaid
+      graph TD
+         subgraph Client Layer
+            A[Web Client]
+         end
+
+         subgraph Application Layer
+            B[Express Server]
+            C[File Handler]
+            D[Hash Generator]
+            E[WebAssembly Module]
+            F[XRPL Client]
+         end
+
+         subgraph Storage Layer
+            G[(MongoDB)]
+            H[XRPL Blockchain]
+         end
+
+         A -->|Upload File| B
+         B -->|Process File| C
+         C -->|Generate Hash| D
+         D -->|Store Hash| G
+         D -->|Pass to Hook| E
+         E -->|Submit Tx| F
+         F -->|Write State| H
+         H -->|Query State| F
+         F -->|Verify Hash| E
+         E -->|Result| B
+   ```
+
+2. **Sequence Diagram**
+
+   ```mermaid
+      sequenceDiagram
+         participant U as User
+         participant S as Server
+         participant M as MongoDB
+         participant W as WebAssembly
+         participant X as XRPL
+
+         %% File Upload Flow
+         U->>S: Upload File
+         S->>S: Calculate SHA-256
+         S->>M: Store Hash
+         S->>W: Prepare Transaction
+         W->>X: Submit Transaction
+         X-->>S: Confirm Transaction
+         S-->>U: Upload Complete
+
+         %% Hash Verification Flow
+         U->>S: Verify File
+         S->>S: Calculate SHA-256
+         S->>X: Query State
+         X-->>S: Return State
+         S-->>U: Verification Result
+   ```
+
+3. **Component Diagram**
+
+   ```mermaid
+      graph TD
+         subgraph Development
+            A[Source Code]
+            B[WebAssembly Compiler]
+            C[Hook Builder]
+         end
+
+         subgraph Production
+            D[Node.js Server]
+            E[MongoDB Instance]
+            F[XRPL Node]
+         end
+
+         subgraph Client
+            G[Web Browser]
+         end
+
+         A -->|Compile| B
+         B -->|Deploy| C
+         C -->|Install| F
+         G -->|HTTP| D
+         D -->|Query| E
+         D -->|RPC| F
+   ```
+
+4. **Data Flow Diagram**
+
+   ```mermaid
+      graph LR
+         subgraph Data Flow
+            A[File Upload] -->|SHA-256| B[Hash Generation]
+            B -->|Store| C[MongoDB]
+            B -->|Encode| D[WebAssembly]
+            D -->|Transaction| E[XRPL]
+            F[File Verify] -->|SHA-256| G[Hash Check]
+            G -->|Query| E
+            E -->|State| G
+            G -->|Result| H[Response]
+      end
+   ```
+
 ## Installation
 
 1. **Clone the repository:**
