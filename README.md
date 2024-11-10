@@ -10,8 +10,8 @@
 1. Clone the repository:
 
    ```sh
-   git clone https://github.com/yourusername/certificate-verification.git
-   cd certificate-verification
+   git clone https://github.com/poweredmn/xrpl-certificate.git
+   cd xrpl-certificate
    ```
 
 2. Install the dependencies:
